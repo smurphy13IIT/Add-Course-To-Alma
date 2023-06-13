@@ -4,15 +4,14 @@ import pandas as pd
 
 #Assign or create a file directory for JSON files
 courses_dir = r'C:\tmp\alma\courses'
-
-csv_filepath = 'PATH TO YOUR CSV OF COURSE DATA'
+csv_filepath = "YOUR FILEPATH"
 
 # Open csv file listing representations
 d = pd.read_csv(csv_filepath, dtype=str)
 d.set_index("course_code", inplace=True, drop=True)
 
 # API key
-api_key = 'YOUR API KEY HERE'
+api_key = 'YOUR API KEY'
 
 # Collect course data from the CSV file
 def GetCourseData(index, row):
@@ -69,16 +68,23 @@ def CreateCourse(course_dict, api_key):
         # API call successful
         add_course = requests.post(apicall.format(format=format, api_key=api_key), headers=headers,
                                    data=json.dumps(course_dict))
-        add_course_json = add_course.json()
-        print(add_course_json)
-        course_id = add_course_json['id']
-        time.sleep(2)
-        new_apicall = 'https://api-na.hosted.exlibrisgroup.com/almaws/v1/courses?{format}&apikey={api_key}&q=course_id~{course_id}'
-        response2 = requests.get(new_apicall.format(format=format, api_key=api_key, course_id=course_id))
-        new_course_data = response2.json()
-        time.sleep(2)
-        print("Check Call: " + str(new_course_data))
-        return course_id
+        if add_course.status_code == 200:
+            add_course_json = add_course.json()
+            print(add_course_json)
+            course_id = add_course_json['id']
+            time.sleep(2)
+            new_apicall = 'https://api-na.hosted.exlibrisgroup.com/almaws/v1/courses?{format}&apikey={api_key}&q=course_id~{course_id}'
+            response2 = requests.get(new_apicall.format(format=format, api_key=api_key, course_id=course_id))
+            new_course_data = response2.json()
+            time.sleep(2)
+            print("Check Call: " + str(new_course_data))
+            return course_id
+
+        else:
+            #API call failed
+            course_exist = "course exists"
+            return course_exist
+
 
 
 for index, row in d.iterrows():
@@ -92,12 +98,16 @@ for index, row in d.iterrows():
     file.writelines(json.dumps(course_dict))
 
     # Push course data to Alma
+
     course_id = CreateCourse(course_dict, api_key)
-    
-    # Update the CSV file with the newly-assigned course ID
-    d.loc[index, 'course_id'] = course_id
-    d = d.astype(str)
-    d.to_csv(csv_filepath)
+    if course_id == "course exists":
+        print(course_dict['code'] + " already exists. Alma was not updated. Moving to the next course.")
+        pass
+
+    else:
+        d.loc[index, 'course_id'] = course_id
+        d = d.astype(str)
+        d.to_csv(csv_filepath)
 
 ## A function to read a course JSON and push it to Alma to create a new course can then be created,
 ## with error handling in case the course already exists somehow.
