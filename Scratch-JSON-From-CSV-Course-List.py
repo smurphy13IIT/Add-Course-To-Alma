@@ -4,14 +4,15 @@ import pandas as pd
 
 #Assign or create a file directory for JSON files
 courses_dir = r'C:\tmp\alma\courses'
-csv_filepath = "/Users/smurphy13/Documents/courses.csv"
+
+csv_filepath = 'PATH TO YOUR CSV OF COURSE DATA'
 
 # Open csv file listing representations
-d = pd.read_csv(csv_filepath, dtype=str)  # INSERT CSV FILEPATH HERE
+d = pd.read_csv(csv_filepath, dtype=str)
 d.set_index("course_code", inplace=True, drop=True)
 
 # API key
-api_key = 'l8xxff979193e25141d6bb60b4c527fc2c46'
+api_key = 'YOUR API KEY HERE'
 
 # Collect course data from the CSV file
 def GetCourseData(index, row):
