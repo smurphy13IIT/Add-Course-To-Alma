@@ -93,7 +93,8 @@ for index, row in d.iterrows():
 
     # Push course data to Alma
     course_id = CreateCourse(course_dict, api_key)
-    # Need to add code to update the CSV with the new course ID
+    
+    # Update the CSV file with the newly-assigned course ID
     d.loc[index, 'course_id'] = course_id
     d = d.astype(str)
     d.to_csv(csv_filepath)
