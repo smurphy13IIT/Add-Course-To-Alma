@@ -4,14 +4,14 @@ import pandas as pd
 
 #Assign or create a file directory for JSON files
 courses_dir = r'C:\tmp\alma\courses'
-csv_filepath = "YOUR FILEPATH"
+csv_filepath = "YOUR CSV FILEPATH"
 
 # Open csv file listing representations
 d = pd.read_csv(csv_filepath, dtype=str)
 d.set_index("course_code", inplace=True, drop=True)
 
 # API key
-api_key = 'YOUR API KEY'
+api_key = "YOUR API KEY"
 
 # Collect course data from the CSV file
 def GetCourseData(index, row):
@@ -58,11 +58,12 @@ def GetCourseData(index, row):
 def CreateCourse(course_dict, api_key):
     apicall = 'https://api-na.hosted.exlibrisgroup.com/almaws/v1/courses?{format}&apikey={api_key}'
     format = "format=json"
-    response = requests.get(apicall.format(format=format, api_key=api_key))
     headers = {
         "Authorization": f"apikey {api_key}",
         "Content-Type": "application/json"
     }
+    response = requests.get(apicall.format(format=format, api_key=api_key))
+
 
     if response.status_code == 200:
         # API call successful
@@ -85,7 +86,54 @@ def CreateCourse(course_dict, api_key):
             course_exist = "course exists"
             return course_exist
 
+def CreateReadingList(course_id, api_key):
+    apicall = 'https://api-na.hosted.exlibrisgroup.com/almaws/v1/courses/{course_id}?{format}&apikey={api_key}'
+    format = "format=json"
+    headers = {
+        "Authorization": f"apikey {api_key}",
+        "Content-Type": "application/json"
+    }
+    response = requests.get(apicall.format(course_id=course_id, format=format, api_key=api_key))
 
+    if response.status_code == 200:
+        course_data = response.json()
+
+        # Set up data dictionary for the new reading list
+        list_code_draft = str(course_data['code'] + "-" + str(course_data['section']) + "-" + course_data['instructor'][0]['last_name'])
+        list_code = list_code_draft.replace(" ", "-")
+
+        reading_list_dict = {
+            'code' : list_code,
+            'name' : str(course_data['name']),
+            'due_back_date' : str(course_data['end_date']),
+            'status' : {'value' : 'Complete'},
+            'visibility' : {'value' : 'OPEN_TO_WORLD'},
+            'publishingStatus' : {'value' : 'DRAFT'}
+        }
+
+        # Push data dictionary to Alma as a JSON
+        list_apicall = 'https://api-na.hosted.exlibrisgroup.com/almaws/v1/courses/{course_id}/reading-lists?{format}&apikey={api_key}'
+        list_post = requests.post(list_apicall.format(course_id=course_id, format=format, api_key=api_key), data=json.dumps(reading_list_dict),headers=headers)
+        print(list_post.json())
+        time.sleep(2)
+
+        if list_post.status_code == 200:
+            check_list_call = 'https://api-na.hosted.exlibrisgroup.com/almaws/v1/courses/{course_id}/reading-lists?{format}&apikey={api_key}&q=code~{list_code}'
+            check_list = requests.get(check_list_call.format(course_id=course_id, format=format, api_key=api_key, list_code=list_code))
+            new_list_data = check_list.json()
+            confirmed_list_code = new_list_data['reading_list'][0]['code']
+
+            course_data['reading_lists'] = new_list_data
+            associate_list = requests.put(apicall.format(course_id=course_id,format = format, api_key=api_key), headers=headers, data=json.dumps(course_data))
+            print(associate_list.json())
+            return confirmed_list_code
+
+        else:
+            # Check API Call Failed
+            list_error = 'No Reading List Found'
+            return list_error
+
+# API call successful
 
 for index, row in d.iterrows():
     course_dict = GetCourseData(index, row)
@@ -98,15 +146,21 @@ for index, row in d.iterrows():
     file.writelines(json.dumps(course_dict))
 
     # Push course data to Alma
-
     course_id = CreateCourse(course_dict, api_key)
+
     if course_id == "course exists":
         print(course_dict['code'] + " already exists. Alma was not updated. Moving to the next course.")
         pass
 
     else:
+
+        # Update the CSV with the new Course ID
         d.loc[index, 'course_id'] = course_id
         d = d.astype(str)
+
+        # Update the CSV with the new Reading List Code
+        reading_list_id = CreateReadingList(course_id, api_key)
+        d.loc[index, 'list_code'] = reading_list_id
         d.to_csv(csv_filepath)
 
 ## A function to read a course JSON and push it to Alma to create a new course can then be created,
