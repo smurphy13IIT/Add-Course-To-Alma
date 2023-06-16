@@ -8,8 +8,8 @@ import pandas as pd
 
 #Assign or create a file directory for JSON files
 courses_dir = r'C:\tmp\alma\courses'
-csv_filepath = "YOUR COURSES CSV FILEPATH HERE"
-citations_filepath = "YOUR CITATIONS CSV FILEPATH HERE"
+csv_filepath = "courses.csv"
+citations_filepath = "citations.csv"
 
 # Open csv files listing representations
 d = pd.read_csv(csv_filepath, dtype=str)
@@ -23,7 +23,6 @@ api_key = "YOUR API KEY HERE"
 
 # Collect course data from the CSV file
 def GetCourseData(index, row):
-    
     course_code = index
     course_name = row['course_name']
     course_section = row['course_section']
@@ -78,6 +77,7 @@ def CreateCourse(course_dict, api_key):
     }
     response = requests.get(apicall.format(format=format, api_key=api_key))
 
+
     if response.status_code == 200:
 
         # API call successful
@@ -85,7 +85,7 @@ def CreateCourse(course_dict, api_key):
                                    data=json.dumps(course_dict))
 
         if add_course.status_code == 200:
-            print(str(course_dict['code']) + " Successfully Added")
+            print("\n" + str(course_dict['code']) + " Successfully Added")
             add_course_json = add_course.json()
             course_id = add_course_json['id']
             time.sleep(2)
@@ -106,7 +106,7 @@ def CreateCourse(course_dict, api_key):
             update_course = requests.put(update_call.format(course_id=course_id, format=format, api_key=api_key), headers=headers,
                                        data=json.dumps(course_dict))
             course_id = update_course.json()['id']
-            print(str(course_dict['code']) + " Already Existed; Successfully Updated")
+            print("\n" + str(course_dict['code']) + " Already Existed; Successfully Updated")
             return course_id
 
     else:
@@ -238,11 +238,11 @@ def AddCitation(index, row, api_key):
 
     if post_citation.status_code == 200:
         row['status'] = 'Posted'
-        return str(course_code + " citation successfully posted\n")
+        return str(course_code + " citation successfully posted")
 
     else:
         row['status'] = 'Not Posted'
-        return str(course_code + " citation not posted\n")
+        return str(course_code + " citation not posted")
 
 
 # Main Loop
