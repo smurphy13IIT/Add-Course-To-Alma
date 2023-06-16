@@ -23,6 +23,7 @@ api_key = "YOUR API KEY HERE"
 
 # Collect course data from the CSV file
 def GetCourseData(index, row):
+    
     course_code = index
     course_name = row['course_name']
     course_section = row['course_section']
@@ -76,7 +77,6 @@ def CreateCourse(course_dict, api_key):
         "Content-Type": "application/json"
     }
     response = requests.get(apicall.format(format=format, api_key=api_key))
-
 
     if response.status_code == 200:
 
