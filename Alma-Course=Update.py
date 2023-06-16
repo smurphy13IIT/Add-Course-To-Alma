@@ -8,7 +8,7 @@ import pandas as pd
 
 #Assign or create a file directory for JSON files
 courses_dir = r'C:\tmp\alma\courses'
-csv_filepath = "YOUR COURSE CSV FILEPATH HERE"
+csv_filepath = "YOUR COURSES CSV FILEPATH HERE"
 citations_filepath = "YOUR CITATIONS CSV FILEPATH HERE"
 
 # Open csv files listing representations
@@ -112,7 +112,8 @@ def CreateCourse(course_dict, api_key):
     else:
         #API console is down
         api_down = "Alma API is down"
-        return api_down
+        print(api_down)
+        quit()
 
 
 def CreateReadingList(course_id, api_key):
@@ -244,7 +245,6 @@ def AddCitation(index, row, api_key):
         return str(course_code + " citation not posted\n")
 
 
-
 # Main Loop
 for index, row in d.iterrows():
     course_dict = GetCourseData(index, row)
@@ -258,19 +258,13 @@ for index, row in d.iterrows():
     # Push course data to Alma
     course_id = CreateCourse(course_dict, api_key)
 
-    if course_id == "Course Exists":
-        print(course_dict['code'] + " already exists. Alma was not updated. Moving to the next course.")
-        pass
+    # Update the CSV with the new Course ID
+    d.loc[index, 'course_id'] = course_id
 
-    else:
-
-        # Update the CSV with the new Course ID
-        d.loc[index, 'course_id'] = course_id
-
-        # Update the CSV with the new Reading List Code
-        reading_list_id = CreateReadingList(course_id, api_key)
-        d.loc[index, 'list_code'] = reading_list_id
-        d.to_csv(csv_filepath)
+    # Update the CSV with the new Reading List Code
+    reading_list_id = CreateReadingList(course_id, api_key)
+    d.loc[index, 'list_code'] = reading_list_id
+    d.to_csv(csv_filepath)
 
 for index, row in dcite.iterrows():
     add_citation = AddCitation(index, row, api_key)
