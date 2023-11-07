@@ -8,9 +8,9 @@ This process should occur before the start of each semester. Because the functio
 
 1. Gather the required data files
    
-   a. An export of all courses for the semester from https://wildfly-prd.iit.edu/coursestatusreport/
+      a. An export of all courses for the semester from https://wildfly-prd.iit.edu/coursestatusreport/
   
-   b. A file containing all textbooks needed for reserves this semester; this comes from the University Bookstore and may require some cleanup to remove non-textbook items and books for graduate courses
+      b. A file containing all textbooks needed for reserves this semester; this comes from the University Bookstore and may require some cleanup to remove non-textbook items and books for graduate courses
 
 2. Download all files in this repository to the same folder. Update **Alma-Course-Update.py** with your own API key (the api_key variable in line 27), and update **citations_cleanup.py** with the current semester information (the current_term variable in line 9).
    
@@ -28,11 +28,11 @@ This process should occur before the start of each semester. Because the functio
     
 9. Run **Alma-Course-Update.py**. This will take a while depending on the number of courses in the **courses.csv** file. Here's what this script does, in a nutshell:
     
-   a. First, it collects data from the courses file and compiles a dictionary for each course that aligns with the data structure that Alma accepts for creating a new course. A unique ID is created for each course that can be referenced to add citations later.
+      a. First, it collects data from the courses file and compiles a dictionary for each course that aligns with the data structure that Alma accepts for creating a new course. A unique ID is created for each course that can be referenced to add citations later.
 
-   b. Next, it creates the new course using the Alma API by pushing the compiled course data as a JSON file to the Alma server.
+      b. Next, it creates the new course using the Alma API by pushing the compiled course data as a JSON file to the Alma server.
 
-   c. A reading list for each course is then created using additional course information retrieved from Alma after each course is created.
+      c. A reading list for each course is then created using additional course information retrieved from Alma after each course is created.
 
-   d. Each reading list is populated with citations using the unique course code created in step a. Citations are only added after all courses and reading lists have been created.
+      d. Each reading list is populated with citations using the unique course code created in step a. Citations are only added after all courses and reading lists have been created.
    
