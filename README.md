@@ -1,5 +1,11 @@
 # Add-Course-To-Alma
 
+This program takes course and textbook data and formats it so that course and citation data are updated in Alma.
+This process should occur before the start of each semester. Because the functions in the script check to see whether courses, reading lists, and citations already exist in Alma before creating new ones, you can run this program as many times as you need to as new textbook information comes in from faculty or from the bookstore. Simply update the **citations.csv** file with the new data.
+
+
+**Steps for Running This Program to Update Course and Citation Data in Alma:**
+
 1. Gather the required data files
    
   a. An export of all courses for the semester from https://wildfly-prd.iit.edu/coursestatusreport/
