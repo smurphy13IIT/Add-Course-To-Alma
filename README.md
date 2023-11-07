@@ -27,8 +27,12 @@ This process should occur before the start of each semester. Because the functio
 8. Run **citations_cleanup.py** again. This will cross-reference the mmsid.csv data with the textbook data. Not every item in the textbook list will have an associated MMSID; they will only have a MMSID if a record for the item currently exists in Alma.
     
 9. Run **Alma-Course-Update.py**. This will take a while depending on the number of courses in the **courses.csv** file. Here's what this script does, in a nutshell:
+    
    a. First, it collects data from the courses file and compiles a dictionary for each course that aligns with the data structure that Alma accepts for creating a new course. A unique ID is created for each course that can be referenced to add citations later.
+
    b. Next, it creates the new course using the Alma API by pushing the compiled course data as a JSON file to the Alma server.
+
    c. A reading list for each course is then created using additional course information retrieved from Alma after each course is created.
+
    d. Each reading list is populated with citations using the unique course code created in step a. Citations are only added after all courses and reading lists have been created.
    
