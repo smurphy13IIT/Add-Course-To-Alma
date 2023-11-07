@@ -9,6 +9,7 @@ This process should occur before the start of each semester. Because the functio
 1. Gather the required data files
    
   a. An export of all courses for the semester from https://wildfly-prd.iit.edu/coursestatusreport/
+  
   b. A file containing all textbooks needed for reserves this semester; this comes from the University Bookstore and may require some cleanup to remove non-textbook items and books for graduate courses
 
 2. Download all files in this repository to the same folder. Update **Alma-Course-Update.py** with your own API key (the api_key variable in line 27), and update **citations_cleanup.py** with the current semester information (the current_term variable in line 9).
