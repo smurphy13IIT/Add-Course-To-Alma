@@ -1,3 +1,2 @@
-course_code,course_id,course_name,course_section,course_dept,course_term,course_start_date,course_end_date,course_year,course_instructor_id,searchable_id,list_code
-ECE 790,,Quantum Electrical Tunneling,002,ECE-43,FALL,2023-08-21,2023-12-12,2023,A20459107,ECE7900010123,
-ECE 830,,Physics of Wonton Burrito Meals,002,ECE-43,FALL,2023-08-21,2023-12-12,2023,A20459107,ECE8300010123,
+"CRN","Status","Course Code","Course Subject","Course Number","Course Title","Cross List Code","College","Department","Schedule Type","Credits","Days","Time","Primary Instructor","Secondary Instructors","Max Enrollment","Current Enrollment","Enrollment Available","Waitlist Count","Campus","Location","Seating","Dates","course_id","list_code"
+10015,"Open","BIOL 107-01","BIOL",107,"General Biol Lecture",,"LS","BIOL","LEC",3,"TR","1125 - 1240","McClane, John",,49,28,21,0,"Mies","PS-121",54,"21-AUG-23 to 09-DEC-23",,
